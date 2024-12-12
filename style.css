@@ -1,0 +1,269 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f5f5f5;
+	touch-action: manipulation; /* タッチ操作を制御 */
+	overscroll-behavior: none; /*スクロールバインドの制御*/
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 1fr);
+    grid-template-rows: repeat(auto-fit, 1fr);
+    width: 90vmin; /* 短辺の90%に基づくサイズ */
+    height: 90vmin; /* 正方形を維持 */
+    gap: 2px;
+    background-color: #e0e0e0;
+}
+
+.tile {
+    position: relative; /* キャラクターの絶対位置を設定可能に */
+    width: 100%; /* 親のグリッドサイズに応じる */
+    aspect-ratio: 1 / 1; /* 正方形を維持 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box; /* パディングやボーダーを含めたサイズ計算 */
+}
+
+.wall {
+    background-color: gray;
+}
+
+.player {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: relative;
+}
+
+.player.up {
+    border-width: 0 15px 25px 15px; /* 上向き矢印 */
+    border-color: transparent transparent blue transparent;
+}
+
+.player.down {
+    border-width: 25px 15px 0 15px; /* 下向き矢印 */
+    border-color: blue transparent transparent transparent;
+}
+
+.player.left {
+    border-width: 15px 25px 15px 0; /* 左向き矢印 */
+    border-color: transparent blue transparent transparent;
+}
+
+.player.right {
+    border-width: 15px 0 15px 25px; /* 右向き矢印 */
+    border-color: transparent transparent transparent blue;
+}
+
+.box {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: relative;
+}
+
+.box.up, .box.down, .box.left, .box.right {
+    border-width: 25px 25px 25px 25px; /* 正方形 */
+    border-color: orange orange orange orange;
+}
+
+.goal {
+    background-color: lightgreen;
+}
+
+.hole {
+    background-color: black;
+}
+.snake {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: relative;
+}
+
+.snake.up {
+    border-width: 0 15px 25px 15px;
+    border-color: transparent transparent red transparent;
+}
+
+.snake.down {
+    border-width: 25px 15px 0 15px;
+    border-color: red transparent transparent transparent;
+}
+
+.snake.left {
+    border-width: 15px 25px 15px 0;
+    border-color: transparent red transparent transparent;
+}
+
+.snake.right {
+    border-width: 15px 0 15px 25px;
+    border-color: transparent transparent transparent red;
+}
+
+/* 爆発アニメーション用クラス */
+.explosion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: red;
+    border-radius: 50%;
+    animation: explode 0.5s ease-out forwards;
+    z-index: 10; /* 他の要素の上に表示 */
+}
+
+/* 爆発のアニメーション */
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(3); /* 爆発のサイズを調整 */
+        opacity: 0;
+    }
+}
+
+.collision-highlight {
+    background-color: red !important;
+}
+
+.disappearance-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.disappearance-animation.player {
+    animation: player-disappear 0.5s ease-out forwards;
+}
+
+.disappearance-animation.box {
+    animation: box-disappear 0.5s ease-out forwards;
+}
+
+@keyframes player-disappear {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes box-disappear {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        background-color: orange;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+        background-color: transparent;
+    }
+}
+
+/* デフォルトのスタイルはそのまま保持 */
+
+/* スマートフォン向けレイアウト */
+@media (max-width: 768px) {
+    #game-board {
+        width: 90vw; /* 画面幅に基づくサイズ調整 */
+        height: 90vw; /* 正方形を維持 */
+        display: grid;
+        grid-template-columns: repeat(8, 1fr); /* タイルを自動調整 */
+        gap: 2px; /* タイル間の間隔 */
+    }
+
+    .tile {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+        width: 100%;
+        height: 100%; /* 各タイルを正方形に */
+		box-sizing: border-box;
+    }
+
+    .player,
+    .snake,
+    .box	{
+        width: 70%; /* キャラクターをタイル内に収める */
+        height: 70%;
+		object-fit: contein;
+    }
+	
+	.player.up,
+    .snake.up {
+       border-width: 0 10px 15px 10px;
+   }
+
+   .player.down,
+   .snake.down {
+       border-width: 15px 10px 0 10px;
+   }
+
+   .player.left,
+   .snake.left {
+       border-width: 10px 15px 10px 0;
+   }
+
+   .player.right,
+   .snake.right {
+       border-width: 10px 0 10px 15px;
+   }
+   .box.up, .box.down, .box.left, .box.right{
+	   border-width: 15px 15px 15px 15px;
+   }
+    .explosion {
+        width: 70%; /* 爆発アニメーションをスマホ向けに調整 */
+        height: 70%;
+    }
+
+    #controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    button {
+        font-size: 1rem; /* ボタンをスマホに合わせて拡大 */
+        padding: 10px;
+    }
+}
+
+#controls {
+    margin-top: 10px; /* ボード下部に配置 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#controls button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#controls button:active {
+    background-color: #45a049;
+}
